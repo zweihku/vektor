@@ -40,3 +40,10 @@ dist-ssr
 
 # Extension build output
 extension/dist/
+
+# Local project files
+PROGRESS.md
+PITCH.md
+PRD.md
+ppt_output/
+skills-lock.json
