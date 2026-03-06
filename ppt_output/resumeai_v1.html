@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vektor - V1 理性克制</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;900&family=Noto+Sans+SC:wght@300;900&display=swap');
+        :root { --p:#6366f1; --s:#38bdf8; --bg1:#0f172a; --bg2:#020617; }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Noto Sans SC','Inter',sans-serif;background:#000;color:#fff;overflow:hidden;}
+        .vp{width:100vw;height:100vh;display:flex;justify-content:center;align-items:center;}
+        .cv{position:relative;width:100vw;height:56.25vw;max-height:100vh;max-width:177.78vh;overflow:hidden;}
+        .sp{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:linear-gradient(180deg,var(--bg1),var(--bg2));opacity:0;pointer-events:none;transition:opacity .8s;}
+        .sp.on{opacity:1;pointer-events:auto;}
+        .gl{position:absolute;width:60%;height:60%;border-radius:50%;filter:blur(120px);opacity:.1;z-index:0;animation:fl 25s infinite alternate ease-in-out;}
+        .g1{top:-20%;left:-10%;background:var(--p);} .g2{bottom:-20%;right:-10%;background:var(--s);}
+        @keyframes fl{to{transform:translate(10%,5%) scale(1.1);}}
+        .cw{position:relative;z-index:10;padding:0 10%;display:flex;flex-direction:column;align-items:center;gap:1.6rem;max-width:100%;}
+        .t1{font-weight:900;font-size:clamp(3.2rem,7vw,6.5rem);line-height:1.1;letter-spacing:-.02em;background:linear-gradient(135deg,var(--p),var(--s));-webkit-background-clip:text;color:transparent;}
+        .t2{font-weight:900;font-size:clamp(1.8rem,4vw,3.2rem);line-height:1.2;background:linear-gradient(135deg,var(--p),var(--s));-webkit-background-clip:text;color:transparent;}
+        .st{font-weight:300;font-size:clamp(1rem,2vw,1.6rem);line-height:1.6;color:#cbd5e1;}
+        .tg{font-size:clamp(.65rem,1.1vw,.95rem);letter-spacing:.15em;text-transform:uppercase;color:#64748b;}
+        .hw{color:#f1f5f9;font-weight:900;}
+
+        /* == A1: 3D FLIP == */
+        .sp.on .a-flip{animation:flipIn .8s cubic-bezier(.25,.46,.45,.94) both;}
+        .sp.on .a-flip-d1{animation:flipIn .8s .15s cubic-bezier(.25,.46,.45,.94) both;}
+        .sp.on .a-flip-d2{animation:flipIn .8s .3s cubic-bezier(.25,.46,.45,.94) both;}
+        @keyframes flipIn{0%{opacity:0;transform:perspective(600px) rotateX(-25deg) translateY(35px);}100%{opacity:1;transform:perspective(600px) rotateX(0) translateY(0);}}
+
+        /* == A2: ELASTIC SCALE == */
+        .sp.on .a-elastic{animation:elasticIn .9s cubic-bezier(.34,1.56,.64,1) both;}
+        @keyframes elasticIn{0%{opacity:0;transform:scale(.4);}60%{transform:scale(1.06);}100%{opacity:1;transform:scale(1);}}
+
+        /* == A3: WIPE LEFT-TO-RIGHT == */
+        .sp.on .a-wipe{animation:wipeIn .9s ease-out both;}
+        .sp.on .a-wipe-d1{animation:wipeIn .9s .2s ease-out both;}
+        .sp.on .a-wipe-d2{animation:wipeIn .9s .4s ease-out both;}
+        @keyframes wipeIn{0%{clip-path:inset(0 100% 0 0);opacity:.5;}100%{clip-path:inset(0 0 0 0);opacity:1;}}
+
+        /* == A4: ORBIT (rotate+translate) == */
+        .sp.on .a-orbit{animation:orbitIn .85s cubic-bezier(.16,1,.3,1) both;}
+        .sp.on .a-orbit-d1{animation:orbitIn .85s .15s cubic-bezier(.16,1,.3,1) both;}
+        .sp.on .a-orbit-d2{animation:orbitIn .85s .3s cubic-bezier(.16,1,.3,1) both;}
+        @keyframes orbitIn{0%{opacity:0;transform:rotate(-8deg) translateX(-50px) scale(.9);}100%{opacity:1;transform:none;}}
+
+        /* == A5: GLOW PULSE (持续) == */
+        .sp.on .a-glow{animation:flipIn .8s ease-out both, glowP 3s 1s ease-in-out infinite;}
+        @keyframes glowP{0%,100%{filter:brightness(1);text-shadow:0 0 20px rgba(99,102,241,.2);}50%{filter:brightness(1.15);text-shadow:0 0 50px rgba(99,102,241,.5),0 0 100px rgba(56,189,248,.25);}}
+
+        /* == A6: COUNTER ROLL == */
+        .sp.on .a-roll{animation:rollIn .7s cubic-bezier(.16,1,.3,1) both;}
+        @keyframes rollIn{0%{opacity:0;transform:translateY(-70px) rotateX(90deg);}100%{opacity:1;transform:none;}}
+
+        /* == A7: SHIMMER == */
+        .shimmer{background:linear-gradient(90deg,var(--p) 0%,#fff 50%,var(--s) 100%);background-size:200% 100%;-webkit-background-clip:text;color:transparent;animation:shimmer 3s infinite linear;}
+        @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+
+        /* == A8: STAGGER SLIDE UP == */
+        .si{opacity:0;}
+        .sp.on .si:nth-child(1){animation:slideUp .5s .1s ease-out forwards;}
+        .sp.on .si:nth-child(2){animation:slideUp .5s .22s ease-out forwards;}
+        .sp.on .si:nth-child(3){animation:slideUp .5s .34s ease-out forwards;}
+        .sp.on .si:nth-child(4){animation:slideUp .5s .46s ease-out forwards;}
+        .sp.on .si:nth-child(5){animation:slideUp .5s .58s ease-out forwards;}
+        .sp.on .si:nth-child(6){animation:slideUp .5s .7s ease-out forwards;}
+        @keyframes slideUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:none;}}
+
+        /* == A9: BLUR ZOOM == */
+        .sp.on .a-blur{animation:blurZoom .7s cubic-bezier(.16,1,.3,1) both;}
+        @keyframes blurZoom{0%{opacity:0;transform:scale(2);filter:blur(15px);}100%{opacity:1;transform:scale(1);filter:blur(0);}}
+
+        /* == A10: BORDER BOX DRAW == */
+        .box-draw{border:1px solid rgba(99,102,241,0);border-radius:12px;padding:1.8rem 2.5rem;transition:border-color .6s;}
+        .sp.on .box-draw{animation:boxIn .8s .2s ease-out forwards;}
+        @keyframes boxIn{to{border-color:rgba(99,102,241,.2);}}
+
+        .nb{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:100;}
+        .nd{width:10px;height:4px;border-radius:2px;background:rgba(255,255,255,.08);cursor:pointer;transition:all .4s cubic-bezier(.34,1.56,.64,1);}
+        .nd.on{background:linear-gradient(135deg,var(--p),var(--s));width:28px;box-shadow:0 0 12px rgba(99,102,241,.3);}
+        .sc{position:fixed;top:24px;right:32px;font-size:14px;color:rgba(255,255,255,.3);font-family:'Inter',monospace;z-index:100;}
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="vp"><div class="cv">
+        <div v-for="(s,i) in slides" :key="i" class="sp" :class="{on:cur===i}">
+            <div class="gl g1"></div><div class="gl g2"></div>
+            <div class="cw" v-html="s"></div>
+        </div>
+    </div></div>
+    <div class="nb"><div v-for="(s,i) in slides" :key="i" class="nd" :class="{on:cur===i}" @click="cur=i"></div></div>
+    <div class="sc">{{cur+1}} / {{slides.length}}</div>
+</div>
+<script>
+const {createApp,ref}=Vue;
+createApp({setup(){
+    const cur=ref(0);
+    const slides=ref([
+        /* 1 封面 */
+        `<p class="tg a-flip">AI-POWERED JOB APPLICATION ASSISTANT</p>
+         <h1 class="t1 a-glow" style="font-size:clamp(4rem,9vw,8rem);">Vektor</h1>
+         <p class="st a-flip-d2">边刷职位，边求职</p>`,
+
+        /* 2 传统流程总览 */
+        `<p class="tg a-orbit">传统求职</p>
+         <h1 class="t1 a-elastic">看到好职位<br>你会怎么做？</h1>
+         <p class="st a-flip-d2">先来看看大多数人的真实流程</p>`,
+
+        /* 3 Pain: 盲改简历 */
+        `<div class="box-draw" style="display:flex;flex-direction:column;gap:.8rem;text-align:left;">
+           <p class="st si">1. 打开 Word，从上次的简历开始改</p>
+           <p class="st si">2. 逐字读 JD，猜哪些关键词重要</p>
+           <p class="st si">3. 凭感觉调整措辞</p>
+           <p class="st si">4. 投出去——匹配度多少？不知道</p>
+         </div>`,
+
+        /* 4 Pain: Cover Letter */
+        `<h1 class="t1 a-blur">Cover Letter？</h1>
+         <h1 class="t2 a-orbit-d1" style="color:#94a3b8;">复制上一份，改个公司名</h1>
+         <p class="st a-flip-d2">或者干脆不写</p>`,
+
+        /* 5 Pain: 无追踪 */
+        `<h1 class="t1 a-roll">投了十个职位</h1>
+         <h1 class="t2 a-wipe-d1" style="color:#94a3b8;">哪个什么状态？</h1>
+         <p class="st a-flip-d2">开个 Excel 手动记，过几天就忘了</p>`,
+
+        /* 6 过渡+插件引出 */
+        `<h1 class="t2 a-wipe">如果你</h1>
+         <h1 class="t1 a-wipe-d1">根本不需要离开</h1>
+         <h1 class="t2 a-wipe-d2">招聘网站呢？</h1>
+         <p class="st a-flip-d2">一个 Chrome 插件，打开职位页自动开始</p>`,
+
+        /* 7 五平台 */
+        `<p class="tg a-flip">一个插件，五大平台</p>
+         <div style="display:flex;flex-direction:column;gap:.7rem;text-align:left;">
+           <p class="t2 si">LinkedIn</p>
+           <p class="t2 si" style="opacity:.8;">Indeed</p>
+           <p class="t2 si" style="opacity:.6;">JobsDB</p>
+           <p class="t2 si" style="opacity:.45;">CTgoodjobs</p>
+           <p class="t2 si" style="opacity:.3;">Boss直聘</p>
+         </div>`,
+
+        /* 8 自动抓取 */
+        `<p class="st a-orbit">打开任何一个职位详情页</p>
+         <h1 class="t1 a-glow">JD 自动抓取</h1>
+         <p class="st a-flip-d2">职位名 · 公司 · 地点 · 完整描述<br>不需要手动复制任何内容</p>`,
+
+        /* 9 一键分析 */
+        `<p class="tg a-flip">浮动卡片</p>
+         <h1 class="t1 a-roll">匹配度当场就知道</h1>
+         <p class="st a-orbit-d1">核心要求满足几项、缺什么技能</p>
+         <p class="st a-orbit-d2">哪条经历该改、该怎么改</p>`,
+
+        /* 10 后台流水线 */
+        `<h1 class="t2 a-blur">一键保存</h1>
+         <p class="st a-flip-d1">后台自动运行完整流水线</p>
+         <div class="box-draw" style="display:flex;flex-direction:column;gap:.8rem;text-align:left;">
+           <p class="st si"><span class="hw">JD 深度分析</span> — 提取关键词、评估匹配度</p>
+           <p class="st si"><span class="hw">Cover Letter</span> — 基于简历 + JD 自动生成</p>
+           <p class="st si"><span class="hw">简历修改建议</span> — 针对该职位的定制方案</p>
+         </div>`,
+
+        /* 11 结果同步 */
+        `<p class="st a-flip">所有分析结果</p>
+         <h1 class="shimmer" style="font-weight:900;font-size:clamp(2.5rem,5.5vw,5rem);line-height:1.15;">一键应用到简历</h1>
+         <p class="st a-flip-d2">不需要手动抄写，不需要来回对照</p>`,
+
+        /* 12 求职看板 */
+        `<p class="tg a-orbit">求职追踪</p>
+         <div style="display:flex;gap:1.8rem;align-items:center;">
+           <div class="si" style="border:1px solid rgba(99,102,241,.2);border-radius:8px;padding:.8rem 1.3rem;"><p class="st">Pending</p></div>
+           <p class="st si" style="color:var(--p);">→</p>
+           <div class="si" style="border:1px solid rgba(99,102,241,.2);border-radius:8px;padding:.8rem 1.3rem;"><p class="st">Ready</p></div>
+           <p class="st si" style="color:var(--p);">→</p>
+           <div class="si" style="border:1px solid rgba(99,102,241,.2);border-radius:8px;padding:.8rem 1.3rem;"><p class="st">Applied</p></div>
+         </div>
+         <p class="st a-flip-d2">告别 Excel，每个职位都有记录和状态</p>`,
+
+        /* 13 三语痛点 */
+        `<p class="tg a-flip">香港求职的独特痛点</p>
+         <h1 class="t1 a-elastic">简历要准备几份？</h1>
+         <p class="st a-orbit-d1">内地公司要简体，本地公司要繁体，外企要英文</p>`,
+
+        /* 14 痛点放大 */
+        `<h1 class="t1 a-blur">改了一条经历</h1>
+         <h1 class="t2 a-orbit-d1" style="color:#94a3b8;">三份都要跟着改</h1>
+         <p class="st a-flip-d2">一个小修改变成三倍工作量<br>还容易改漏、改错</p>`,
+
+        /* 15 三语方案 */
+        `<p class="tg a-flip">特色二</p>
+         <h1 class="t1 a-glow">三语切换</h1>
+         <p class="st a-flip-d2">一份简历维护三个语言版本<br>顶栏一键切换，内容自动转换</p>`,
+
+        /* 16 简繁转换 */
+        `<p class="tg a-orbit">简体 ↔ 繁体 · 精确转换</p>
+         <h1 class="t2 a-wipe">「软件」→「<span class="shimmer">軟件</span>」</h1>
+         <h1 class="t2 a-wipe-d1">「信息」→「<span class="shimmer">資訊</span>」</h1>
+         <h1 class="t2 a-wipe-d2">「网络」→「<span class="shimmer">網絡</span>」</h1>
+         <p class="st a-flip-d2">不是简单字符替换，是词级精确对应</p>`,
+
+        /* 17 中英翻译 */
+        `<p class="tg a-orbit">中 ↔ 英 · 大语言模型智能翻译 · API 可自由配置</p>
+         <h1 class="t2 a-wipe">「腾讯」→ Tencent</h1>
+         <h1 class="t2 a-wipe-d1" style="font-size:clamp(1.5rem,3.2vw,2.6rem);">「港大」→ The University of Hong Kong</h1>
+         <p class="st a-flip-d2">公司名、学校名自动使用官方英文名<br>技术术语 React / Docker / AWS 原样保留</p>`,
+
+        /* 18 名称快照 */
+        `<h1 class="t1 a-roll">切回来<br>还是你的名字</h1>
+         <p class="st a-orbit-d1">切英文前自动快照保存所有中文名</p>
+         <p class="st a-orbit-d2">切回中文直接恢复，不靠反向翻译</p>`,
+
+        /* 19 AI 能力 */
+        `<p class="tg a-flip">不只是翻译</p>
+         <div class="box-draw" style="display:flex;flex-direction:column;gap:.7rem;text-align:left;">
+           <p class="st si"><span class="hw">JD 匹配分析</span> — 评分 + 缺失技能 + ATS 关键词</p>
+           <p class="st si"><span class="hw">简历评审</span> — 四维评分 + 逐章节反馈</p>
+           <p class="st si"><span class="hw">逐条优化</span> — 对话式打磨，STAR 方法 + 量化</p>
+           <p class="st si"><span class="hw">Cover Letter</span> — 三种风格，中英双语</p>
+           <p class="st si"><span class="hw">智能翻译</span> — 三语互转，名称快照</p>
+           <p class="st si"><span class="hw">简历解析</span> — 上传 PDF/Word 自动填充</p>
+         </div>`,
+
+        /* 20 结尾 */
+        `<h1 class="t1 a-glow" style="font-size:clamp(3.5rem,8vw,7rem);">边刷职位<br>边求职</h1>
+         <p class="st a-flip-d2">一份简历，三语通用</p>
+         <p class="tg a-orbit-d2">VEKTOR</p>`,
+    ]);
+    window.addEventListener('keydown',e=>{
+        if(['ArrowRight','ArrowDown',' '].includes(e.key)&&cur.value<slides.value.length-1)cur.value++;
+        if(['ArrowLeft','ArrowUp'].includes(e.key)&&cur.value>0)cur.value--;
+    });
+    return{cur,slides};
+}}).mount('#app');
+</script>
+</body>
+</html>

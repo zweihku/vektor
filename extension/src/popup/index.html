@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vektor</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="header">
+    <h1>Vektor</h1>
+    <button id="lang-toggle" class="lang-toggle">中文</button>
+  </header>
+  <div id="kanban" class="kanban">
+    <div class="kanban-column" data-status="pending">
+      <h2 class="column-title">
+        <span class="column-dot pending"></span>
+        <span data-i18n="popup.pending">Pending</span>
+        <span class="column-count" id="count-pending">0</span>
+      </h2>
+      <div class="column-cards" id="col-pending"></div>
+    </div>
+    <div class="kanban-column" data-status="ready">
+      <h2 class="column-title">
+        <span class="column-dot ready"></span>
+        <span data-i18n="popup.ready">Ready</span>
+        <span class="column-count" id="count-ready">0</span>
+      </h2>
+      <div class="column-cards" id="col-ready"></div>
+    </div>
+    <div class="kanban-column" data-status="applied">
+      <h2 class="column-title">
+        <span class="column-dot applied"></span>
+        <span data-i18n="popup.applied">Applied</span>
+        <span class="column-count" id="count-applied">0</span>
+      </h2>
+      <div class="column-cards" id="col-applied"></div>
+    </div>
+  </div>
+  <div id="empty-state" class="empty-state" style="display: none;">
+    <p data-i18n="popup.noJobs">No saved jobs yet.</p>
+    <p class="empty-hint" data-i18n="popup.hint">Visit a job page to get started.</p>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

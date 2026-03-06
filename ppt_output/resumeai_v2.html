@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vektor - V2 情绪冲击</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;900&family=Noto+Sans+SC:wght@300;900&display=swap');
+        :root{--p:#f97316;--s:#ef4444;--bg1:#1c1917;--bg2:#0a0a0a;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Noto Sans SC','Inter',sans-serif;background:#0a0a0a;color:#fff;overflow:hidden;}
+        .vp{width:100vw;height:100vh;display:flex;justify-content:center;align-items:center;}
+        .cv{position:relative;width:100vw;height:56.25vw;max-height:100vh;max-width:177.78vh;overflow:hidden;}
+        .sp{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:linear-gradient(180deg,var(--bg1),var(--bg2));opacity:0;pointer-events:none;transition:opacity .6s;}
+        .sp.on{opacity:1;pointer-events:auto;}
+        .gl{position:absolute;width:70%;height:70%;border-radius:50%;filter:blur(140px);opacity:.12;}
+        .g1{top:-25%;left:-15%;background:var(--p);animation:pulse 6s infinite alternate ease-in-out;}
+        .g2{bottom:-25%;right:-15%;background:var(--s);animation:pulse 6s 3s infinite alternate ease-in-out;}
+        @keyframes pulse{0%{transform:scale(1);opacity:.08;}100%{transform:scale(1.3);opacity:.18;}}
+        .cw{position:relative;z-index:10;padding:0 8%;display:flex;flex-direction:column;align-items:center;gap:1.6rem;max-width:100%;}
+        .t1{font-weight:900;font-size:clamp(3.5rem,8.5vw,7.5rem);line-height:1.05;letter-spacing:-.03em;background:linear-gradient(135deg,var(--p),var(--s));-webkit-background-clip:text;color:transparent;}
+        .t2{font-weight:900;font-size:clamp(1.8rem,4vw,3.2rem);line-height:1.2;background:linear-gradient(135deg,var(--p),var(--s));-webkit-background-clip:text;color:transparent;}
+        .st{font-weight:300;font-size:clamp(1rem,2vw,1.6rem);line-height:1.6;color:#a8a29e;}
+        .tg{font-size:clamp(.65rem,1.1vw,.95rem);letter-spacing:.15em;text-transform:uppercase;color:#78716c;}
+        .xo{text-decoration:line-through;color:#57534e;font-weight:300;font-size:clamp(1.2rem,2.2vw,1.8rem);}
+        .hw{color:#fafaf9;font-weight:900;}
+
+        /* A1: SLAM DOWN */
+        .sp.on .a-slam{animation:slam .35s cubic-bezier(.22,1,.36,1) both;}
+        .sp.on .a-slam-d1{animation:slam .35s .12s cubic-bezier(.22,1,.36,1) both;}
+        @keyframes slam{0%{opacity:0;transform:translateY(-70px) scale(1.12);}100%{opacity:1;transform:none;}}
+
+        /* A2: FIRE BURST */
+        .sp.on .a-fire{animation:slam .35s ease-out both,fireBurst 2.5s .5s ease-in-out infinite;}
+        @keyframes fireBurst{0%,100%{filter:brightness(1);text-shadow:0 0 15px rgba(249,115,22,.2);}25%{filter:brightness(1.3);text-shadow:0 0 60px rgba(249,115,22,.7),0 0 120px rgba(239,68,68,.3);}50%{filter:brightness(1.1);text-shadow:0 0 30px rgba(249,115,22,.4);}75%{filter:brightness(1.25);text-shadow:0 0 50px rgba(239,68,68,.6);}}
+
+        /* A3: ZOOM BLUR */
+        .sp.on .a-zoom{animation:zoomBlur .6s cubic-bezier(.16,1,.3,1) both;}
+        @keyframes zoomBlur{0%{opacity:0;transform:scale(2.5);filter:blur(18px);}100%{opacity:1;transform:scale(1);filter:blur(0);}}
+
+        /* A4: SHATTER */
+        .sp.on .a-shatter{animation:shatter .65s cubic-bezier(.16,1,.3,1) both;}
+        .sp.on .a-shatter-d1{animation:shatter .65s .12s cubic-bezier(.16,1,.3,1) both;}
+        .sp.on .a-shatter-d2{animation:shatter .65s .24s cubic-bezier(.16,1,.3,1) both;}
+        @keyframes shatter{0%{opacity:0;transform:translateX(-25px) skewX(-6deg) scaleX(.85);}50%{transform:translateX(8px) skewX(1.5deg) scaleX(1.02);}100%{opacity:1;transform:none;}}
+
+        /* A5: ROTATE REVEAL */
+        .sp.on .a-rot{animation:rotIn .8s cubic-bezier(.34,1.56,.64,1) both;}
+        @keyframes rotIn{0%{opacity:0;transform:rotate(10deg) scale(.7);}100%{opacity:1;transform:none;}}
+
+        /* A6: EXPAND LINE */
+        .exp{width:0;height:2px;background:linear-gradient(90deg,var(--p),var(--s));border-radius:1px;}
+        .sp.on .exp{animation:expL .8s .3s ease-out forwards;}
+        @keyframes expL{to{width:min(280px,35vw);}}
+
+        /* A7: STAGGER */
+        .si{opacity:0;}
+        .sp.on .si:nth-child(1){animation:shatter .5s .1s ease-out forwards;}
+        .sp.on .si:nth-child(2){animation:shatter .5s .22s ease-out forwards;}
+        .sp.on .si:nth-child(3){animation:shatter .5s .34s ease-out forwards;}
+        .sp.on .si:nth-child(4){animation:shatter .5s .46s ease-out forwards;}
+        .sp.on .si:nth-child(5){animation:shatter .5s .58s ease-out forwards;}
+        .sp.on .si:nth-child(6){animation:shatter .5s .7s ease-out forwards;}
+
+        /* A8: FADE UP */
+        .sp.on .a-up{animation:fadeUp .6s ease-out both;}
+        .sp.on .a-up-d1{animation:fadeUp .6s .12s ease-out both;}
+        .sp.on .a-up-d2{animation:fadeUp .6s .24s ease-out both;}
+        .sp.on .a-up-d3{animation:fadeUp .6s .36s ease-out both;}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(25px);}to{opacity:1;transform:none;}}
+
+        .pill{display:inline-block;padding:.3em .7em;background:rgba(249,115,22,.12);border-radius:6px;font-size:clamp(1.1rem,2.2vw,1.8rem);font-weight:900;color:#fafaf9;}
+
+        .nb{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:100;}
+        .nd{width:8px;height:8px;border-radius:2px;background:rgba(255,255,255,.1);cursor:pointer;transition:all .3s;}
+        .nd.on{background:var(--p);transform:scale(1.3);box-shadow:0 0 10px rgba(249,115,22,.5);animation:ndPulse 1.5s infinite ease-in-out;}
+        @keyframes ndPulse{0%,100%{box-shadow:0 0 8px rgba(249,115,22,.4);}50%{box-shadow:0 0 18px rgba(249,115,22,.7),0 0 30px rgba(239,68,68,.3);}}
+        .sc{position:fixed;top:24px;right:32px;font-size:14px;color:rgba(255,255,255,.3);font-family:'Inter',monospace;z-index:100;}
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="vp"><div class="cv">
+        <div v-for="(s,i) in slides" :key="i" class="sp" :class="{on:cur===i}">
+            <div class="gl g1"></div><div class="gl g2"></div>
+            <div class="cw" v-html="s"></div>
+        </div>
+    </div></div>
+    <div class="nb"><div v-for="(s,i) in slides" :key="i" class="nd" :class="{on:cur===i}" @click="cur=i"></div></div>
+    <div class="sc">{{cur+1}} / {{slides.length}}</div>
+</div>
+<script>
+const {createApp,ref}=Vue;
+createApp({setup(){
+    const cur=ref(0);
+    const slides=ref([
+        /* 1 */ `<h1 class="t1 a-fire">还在复制粘贴<br>JD？</h1><p class="st a-up-d2">Vektor — 求职不该这么累</p>`,
+        /* 2 */ `<p class="st a-up" style="color:#78716c;">你现在怎么投简历？</p><h1 class="t1 a-slam" style="margin-top:.5rem;">打开 Word<br>开始改</h1>`,
+        /* 3 */ `<p class="xo a-shatter">逐字读 JD，猜关键词</p><p class="xo a-shatter-d1">凭感觉调措辞，投出去</p><p class="xo a-shatter-d2">匹配度多少？不知道</p><h1 class="t2 a-slam" style="margin-top:1rem;color:#fafaf9;">盲投</h1>`,
+        /* 4 */ `<h1 class="t1 a-fire">Cover Letter？</h1><p class="st a-shatter-d1">复制上一份，改个公司名</p><p class="st a-shatter-d2" style="color:#57534e;">或者干脆不写</p>`,
+        /* 5 */ `<h1 class="t1 a-zoom">投了十个职位</h1><p class="st a-up-d1">哪个什么状态？忘了</p><p class="st a-up-d2" style="color:#57534e;">开个 Excel 手动记，过几天也懒得看</p>`,
+        /* 6 */ `<p class="st a-up" style="color:#78716c;">如果我告诉你——</p><h1 class="t1 a-slam" style="margin-top:.5rem;">装个插件<br>全部搞定</h1><p class="st a-up-d2">Chrome 插件，打开招聘网站自动开始</p>`,
+        /* 7 */ `<p class="tg a-shatter">一个插件，五个平台</p>
+                 <div style="display:flex;gap:1.2rem;flex-wrap:wrap;justify-content:center;">
+                   <span class="pill si">LinkedIn</span><span class="pill si">Indeed</span><span class="pill si">JobsDB</span><span class="pill si">CTgoodjobs</span><span class="pill si">Boss直聘</span>
+                 </div>`,
+        /* 8 */ `<h1 class="t1 a-zoom">JD 自动抓取</h1><p class="st a-up-d1">打开职位页的瞬间，插件已经识别完了</p><p class="st a-up-d2" style="color:var(--p);">职位名 · 公司 · 地点 · 完整描述</p>`,
+        /* 9 */ `<h1 class="t1 a-slam">匹配度<br>当场就知道</h1><p class="st a-shatter-d1">核心要求满足几项、缺什么技能</p><p class="st a-shatter-d2">该怎么改，一眼就清楚</p>`,
+        /* 10 */ `<h1 class="t2 a-zoom">一键保存</h1><p class="st a-up-d1">后台自动跑完整流水线——</p><p class="st a-up-d2" style="color:#e7e5e4;">JD 分析 → Cover Letter → 简历修改建议</p><p class="st a-up-d3" style="color:var(--p);">不用等，不用盯，全部后台完成</p>`,
+        /* 11 */ `<h1 class="t1 a-fire">一键应用</h1><p class="st a-shatter-d1">所有建议直接同步到简历</p><p class="st a-shatter-d2">不需要手动抄，不需要来回对照</p>`,
+        /* 12 */ `<p class="tg a-shatter">求职追踪</p><h1 class="t2 a-rot">Pending → Ready → Applied</h1><p class="st a-up-d2">看板式管理，每个职位都有记录</p><p class="st a-up-d3">扔掉你的 Excel 表格吧</p>`,
+        /* 13 */ `<p class="st a-up" style="color:#78716c;">接下来，说一个香港求职者才懂的痛——</p><h1 class="t1 a-slam" style="margin-top:1rem;">简历准备几份？</h1>`,
+        /* 14 */ `<h1 class="t2 a-shatter">简体投内地</h1><h1 class="t2 a-shatter-d1">繁体投本地</h1><h1 class="t2 a-shatter-d2">英文投外企</h1><div class="exp" style="margin-top:.8rem;"></div><p class="st a-up-d3">改了一处，三份都要改，还容易改漏</p>`,
+        /* 15 */ `<h1 class="t1 a-fire">改一次就够了</h1><p class="st a-up-d1">顶栏一键切换语言</p><p class="st a-up-d2">内容自动转换，一份简历三个版本</p>`,
+        /* 16 */ `<p class="tg a-shatter">简体 ↔ 繁体 · 词级精确转换</p><h1 class="t2 a-zoom">「软件」→「軟件」</h1><h1 class="t2 a-zoom" style="animation-delay:.12s;">「信息」→「資訊」</h1><p class="st a-up-d2">不是乱码替换，是真正的语义对应</p>`,
+        /* 17 */ `<p class="tg a-shatter">中 ↔ 英 · 大语言模型翻译 · API 可配置</p><h1 class="t2 a-rot">「腾讯」→ Tencent</h1><h1 class="t2 a-rot" style="animation-delay:.12s;font-size:clamp(1.4rem,3vw,2.4rem);">「港大」→ The University of Hong Kong</h1><p class="st a-up-d2">技术术语 React / Docker 原样保留</p>`,
+        /* 18 */ `<h1 class="t1 a-slam">切回来<br>还是你的名字</h1><p class="st a-shatter-d1">切英文前自动快照保存中文名</p><p class="st a-shatter-d2">切回来直接恢复，不靠反向翻译</p>`,
+        /* 19 */ `<p class="tg a-shatter">不只是翻译</p>
+                  <div style="display:flex;flex-direction:column;gap:.5rem;text-align:left;">
+                    <p class="st si"><span class="hw">JD 匹配</span> — 评分 + 缺失技能 + ATS 关键词</p>
+                    <p class="st si"><span class="hw">简历评审</span> — 四维评分 + 逐章节反馈</p>
+                    <p class="st si"><span class="hw">逐条优化</span> — STAR 方法 + 量化数据</p>
+                    <p class="st si"><span class="hw">Cover Letter</span> — 三种风格 + 中英双语</p>
+                    <p class="st si"><span class="hw">智能翻译</span> — 三语互转 + 名称快照</p>
+                    <p class="st si"><span class="hw">简历解析</span> — PDF/Word 上传自动填充</p>
+                  </div>`,
+        /* 20 */ `<h1 class="t1 a-fire" style="font-size:clamp(3.8rem,9vw,8rem);">别刷了<br>边刷边投</h1><div class="exp" style="margin-top:.5rem;"></div><p class="tg a-up-d3">VEKTOR</p>`,
+    ]);
+    window.addEventListener('keydown',e=>{
+        if(['ArrowRight','ArrowDown',' '].includes(e.key)&&cur.value<slides.value.length-1)cur.value++;
+        if(['ArrowLeft','ArrowUp'].includes(e.key)&&cur.value>0)cur.value--;
+    });
+    return{cur,slides};
+}}).mount('#app');
+</script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vektor — Job Details</title>
+  <link rel="stylesheet" href="detail.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="nav">
+      <button id="back-btn" class="back-btn">&larr; <span data-i18n="detail.back">Back</span></button>
+      <div class="nav-actions">
+        <button id="lang-toggle" class="lang-toggle">中文</button>
+        <button id="mark-applied-btn" class="btn btn-primary" style="display:none" data-i18n="detail.markApplied">Mark as Applied</button>
+        <button id="delete-btn" class="btn btn-danger" data-i18n="detail.delete">Delete</button>
+      </div>
+    </nav>
+
+    <div id="loading" class="loading" data-i18n="detail.loading">Loading...</div>
+    <div id="error-view" class="error-view" style="display:none"></div>
+
+    <main id="content" style="display:none">
+      <!-- Header -->
+      <header class="job-header">
+        <h1 id="job-title"></h1>
+        <p id="job-company" class="company"></p>
+        <p id="job-location" class="location"></p>
+        <div class="meta">
+          <span id="job-date" class="meta-item"></span>
+          <a id="job-url" class="meta-item link" target="_blank" data-i18n="detail.viewJob">View Job</a>
+        </div>
+      </header>
+
+      <!-- Score -->
+      <section id="score-section" class="section" style="display:none">
+        <div class="score-display">
+          <div id="score-badge" class="score-circle"></div>
+          <span class="score-label" data-i18n="detail.matchScore">Match Score</span>
+        </div>
+      </section>
+
+      <!-- JD Snapshot -->
+      <section class="section collapsible">
+        <button class="section-toggle" data-target="jd-content">
+          <h2 data-i18n="detail.jobDescription">Job Description</h2>
+          <span class="toggle-icon">+</span>
+        </button>
+        <div id="jd-content" class="section-body collapsed">
+          <div id="jd-text" class="jd-text"></div>
+        </div>
+      </section>
+
+      <!-- Analysis -->
+      <section id="analysis-section" class="section" style="display:none">
+        <h2 data-i18n="detail.matchAnalysis">Match Analysis</h2>
+        <div class="analysis-grid">
+          <div class="analysis-card">
+            <h3 data-i18n="detail.coreRequirements">Core Requirements</h3>
+            <ul id="core-reqs"></ul>
+          </div>
+          <div class="analysis-card">
+            <h3 data-i18n="detail.missingSkills">Missing Skills</h3>
+            <ul id="missing-skills"></ul>
+          </div>
+          <div class="analysis-card">
+            <h3 data-i18n="detail.atsKeywords">ATS Keywords</h3>
+            <div id="ats-keywords" class="tag-list"></div>
+          </div>
+          <div class="analysis-card">
+            <h3 data-i18n="detail.niceToHave">Nice to Have</h3>
+            <ul id="nice-to-have"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Cover Letter -->
+      <section id="cl-section" class="section" style="display:none">
+        <div class="section-header">
+          <h2 data-i18n="detail.coverLetter">Cover Letter</h2>
+          <button id="copy-cl-btn" class="btn btn-sm" data-i18n="detail.copy">Copy</button>
+        </div>
+        <div id="cover-letter" class="cover-letter-text"></div>
+      </section>
+
+      <!-- Resume Suggestions -->
+      <section id="suggestions-section" class="section" style="display:none">
+        <div class="section-header">
+          <h2 data-i18n="detail.resumeSuggestions">Resume Suggestions</h2>
+          <button id="sync-btn" class="btn btn-primary" data-i18n="detail.syncToVektor">Sync to Vektor</button>
+        </div>
+        <div id="sync-status" class="sync-status" style="display:none"></div>
+        <div id="strategy" class="strategy-box"></div>
+        <div class="suggestions-grid">
+          <div class="suggestion-card">
+            <h3 data-i18n="detail.skillsToAdd">Skills to Add</h3>
+            <div id="skills-add" class="tag-list"></div>
+          </div>
+          <div class="suggestion-card">
+            <h3 data-i18n="detail.skillsToEmphasize">Skills to Emphasize</h3>
+            <div id="skills-emphasize" class="tag-list"></div>
+          </div>
+        </div>
+        <div id="bullet-mods"></div>
+      </section>
+
+      <!-- Processing Status -->
+      <section id="processing-section" class="section" style="display:none">
+        <div class="processing-banner">
+          <span class="spinner"></span>
+          <span id="processing-text" data-i18n="detail.processing">Processing...</span>
+        </div>
+      </section>
+
+      <!-- Error -->
+      <section id="error-section" class="section" style="display:none">
+        <div class="error-banner" id="error-text"></div>
+      </section>
+    </main>
+  </div>
+  <script src="detail.js"></script>
+</body>
+</html>

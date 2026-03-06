@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@media print {
+  @page {
+    size: A4;
+    margin: 5mm;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  #resume-preview,
+  #resume-preview * {
+    visibility: visible;
+  }
+
+  #resume-preview {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Allow templates to flow across multiple pages */
+  .modern-template,
+  .classic-template,
+  .minimal-template,
+  .creative-template {
+    width: 100% !important;
+    min-height: auto !important;
+  }
+
+  /* Two-column body containers: allow multi-page flow */
+  .modern-body,
+  .creative-body {
+    min-height: auto !important;
+  }
+
+  /* Keep page headers together and with following content */
+  .modern-header,
+  .classic-header,
+  .minimal-header,
+  .creative-header {
+    break-inside: avoid;
+    break-after: avoid;
+  }
+
+  /* Keep entry headers (company/position row) with their bullets */
+  .exp-header,
+  .entry-row,
+  .entry-top,
+  .tc-header {
+    break-after: avoid;
+  }
+
+  /* Prevent individual entries from being split across pages */
+  .experience-item,
+  .classic-entry,
+  .minimal-entry,
+  .timeline-item {
+    break-inside: avoid;
+  }
+
+  /* Keep section titles with their content — don't orphan at page bottom */
+  .right-section-title,
+  .left-section-title,
+  .classic-section-title,
+  .section-head,
+  .main-title,
+  .sidebar-title {
+    break-after: avoid;
+  }
+
+  /* Sidebar sections are typically short — keep them together */
+  .left-section,
+  .sidebar-section {
+    break-inside: avoid;
+  }
+}

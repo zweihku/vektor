@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vektor - V3 极简抽象</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;900&family=Noto+Sans+SC:wght@300;900&display=swap');
+        :root{--p:#10b981;--s:#06b6d4;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Noto Sans SC','Inter',sans-serif;background:#000;color:#fff;overflow:hidden;}
+        .vp{width:100vw;height:100vh;display:flex;justify-content:center;align-items:center;}
+        .cv{position:relative;width:100vw;height:56.25vw;max-height:100vh;max-width:177.78vh;overflow:hidden;}
+        .sp{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:#000;opacity:0;pointer-events:none;transition:opacity 1.2s;}
+        .sp.on{opacity:1;pointer-events:auto;}
+        .bl{position:absolute;z-index:0;width:1px;height:100%;background:linear-gradient(180deg,transparent,rgba(16,185,129,.06) 50%,transparent);}
+        .l1{left:12%;}.l2{left:88%;}.l3{left:50%;opacity:.5;}
+        .cw{position:relative;z-index:10;padding:0 12%;display:flex;flex-direction:column;align-items:center;gap:1.8rem;max-width:100%;}
+        .t1{font-weight:900;font-size:clamp(3.5rem,8.5vw,7.5rem);line-height:1;letter-spacing:-.04em;color:#fff;}
+        .t1 .a{background:linear-gradient(135deg,var(--p),var(--s));-webkit-background-clip:text;color:transparent;}
+        .t2{font-weight:900;font-size:clamp(1.8rem,4vw,3.2rem);line-height:1.2;color:#fff;}
+        .t2 .a{background:linear-gradient(135deg,var(--p),var(--s));-webkit-background-clip:text;color:transparent;}
+        .st{font-weight:300;font-size:clamp(1rem,2vw,1.6rem);line-height:1.6;color:#525252;}
+        .tg{font-size:clamp(.65rem,1vw,.9rem);letter-spacing:.2em;text-transform:uppercase;color:#404040;}
+        .tl{width:60px;height:1px;background:linear-gradient(90deg,var(--p),var(--s));}
+        .dim{opacity:.25;}.mid{opacity:.5;}
+
+        /* A1: BREATHE */
+        .sp.on .a-breathe{animation:fadeIn 1s ease-out,breathe 4s 1.2s ease-in-out infinite;}
+        @keyframes breathe{0%,100%{filter:brightness(.85);text-shadow:none;}50%{filter:brightness(1.2);text-shadow:0 0 50px rgba(16,185,129,.2);}}
+
+        /* A2: TRACE */
+        .sp.on .a-trace{animation:traceIn 1s ease-out both;}
+        .sp.on .a-trace-d1{animation:traceIn 1s .2s ease-out both;}
+        .sp.on .a-trace-d2{animation:traceIn 1s .4s ease-out both;}
+        @keyframes traceIn{0%{clip-path:inset(0 100% 0 0);opacity:.5;}100%{clip-path:inset(0 0 0 0);opacity:1;}}
+
+        /* A3: DOT EXPAND */
+        .sp.on .a-dot{animation:dotExp .8s cubic-bezier(.16,1,.3,1) both;}
+        @keyframes dotExp{0%{transform:scale(0);opacity:0;clip-path:circle(0% at 50% 50%);}100%{transform:scale(1);opacity:1;clip-path:circle(100% at 50% 50%);}}
+
+        /* A4: VSPLIT */
+        .sp.on .a-vs{animation:vSplit .8s cubic-bezier(.16,1,.3,1) both;}
+        @keyframes vSplit{0%{clip-path:inset(48% 0 48% 0);opacity:0;}100%{clip-path:inset(0 0 0 0);opacity:1;}}
+
+        /* A5: SPIRAL */
+        .sp.on .a-spiral{animation:spiralIn .9s cubic-bezier(.34,1.56,.64,1) both;}
+        @keyframes spiralIn{0%{opacity:0;transform:rotate(-15deg) scale(.5);}100%{opacity:1;transform:none;}}
+
+        /* A6: GLOW RING */
+        .gr{display:inline-block;padding:.2em .6em;border:1px solid rgba(16,185,129,0);border-radius:8px;}
+        .sp.on .gr{animation:ringG .8s .4s ease-out forwards;}
+        @keyframes ringG{to{border-color:rgba(16,185,129,.3);box-shadow:0 0 20px rgba(16,185,129,.1);}}
+
+        /* A7: LINE GROW */
+        .sp.on .tl{animation:lineG 1s .3s ease-out both;}
+        @keyframes lineG{from{width:0;opacity:0;}to{width:60px;opacity:1;}}
+
+        /* A8: FADE */
+        .sp.on .a-f{animation:fadeIn 1.2s ease-out both;}
+        .sp.on .a-f-d1{animation:fadeIn 1.2s .2s ease-out both;}
+        .sp.on .a-f-d2{animation:fadeIn 1.2s .4s ease-out both;}
+        .sp.on .a-f-d3{animation:fadeIn 1.2s .6s ease-out both;}
+        .sp.on .a-f-d4{animation:fadeIn 1.2s .8s ease-out both;}
+        @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+        .nb{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:flex;gap:4px;z-index:100;}
+        .nd{width:16px;height:1px;background:rgba(255,255,255,.06);cursor:pointer;transition:all .5s ease;}
+        .nd.on{width:28px;background:var(--p);box-shadow:0 0 8px rgba(16,185,129,.25);}
+        .sc{position:fixed;top:24px;right:32px;font-size:13px;color:rgba(255,255,255,.15);font-family:'Inter',monospace;z-index:100;}
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="vp"><div class="cv">
+        <div v-for="(s,i) in slides" :key="i" class="sp" :class="{on:cur===i}">
+            <div class="bl l1"></div><div class="bl l2"></div><div class="bl l3"></div>
+            <div class="cw" v-html="s"></div>
+        </div>
+    </div></div>
+    <div class="nb"><div v-for="(s,i) in slides" :key="i" class="nd" :class="{on:cur===i}" @click="cur=i"></div></div>
+    <div class="sc">{{cur+1}} / {{slides.length}}</div>
+</div>
+<script>
+const {createApp,ref}=Vue;
+createApp({setup(){
+    const cur=ref(0);
+    const slides=ref([
+        `<h1 class="t1 a-breathe"><span class="a">Vek</span>tor</h1><div class="tl"></div><p class="tg a-f-d2">边刷职位，边求职</p>`,
+        `<h1 class="t1 a-breathe" style="font-size:clamp(3rem,7vw,6rem);">打开 Word</h1><p class="st a-f-d1">看到好职位的第一反应</p>`,
+        `<p class="st a-dot">逐字读 JD · 猜关键词 · 凭感觉改</p><div class="tl"></div><p class="st a-f-d2">投出去，匹配度多少？不知道</p>`,
+        `<h1 class="t2 a-vs">Cover Letter</h1><p class="st a-f-d1">复制上一份</p><p class="st a-f-d2">改个公司名</p>`,
+        `<h1 class="t2 a-trace">十个职位</h1><h1 class="t1 a-spiral">全凭记忆</h1><p class="st a-f-d2">投了哪些？什么状态？忘了</p>`,
+        `<p class="tg a-f">CHROME EXTENSION</p><h1 class="t2 a-trace">一个插件</h1><p class="st a-f-d2">不离开招聘网站，自动开始</p>`,
+        `<p class="tg a-f">五大平台</p>
+         <div style="display:flex;flex-direction:column;gap:.5rem;text-align:left;">
+           <p class="t2 a-f" style="font-size:clamp(1.6rem,3.5vw,2.8rem);">LinkedIn</p>
+           <p class="t2 a-f-d1 mid" style="font-size:clamp(1.6rem,3.5vw,2.8rem);">Indeed</p>
+           <p class="t2 a-f-d2 mid" style="font-size:clamp(1.6rem,3.5vw,2.8rem);">JobsDB</p>
+           <p class="t2 a-f-d3 dim" style="font-size:clamp(1.6rem,3.5vw,2.8rem);">CTgoodjobs</p>
+           <p class="t2 a-f-d4 dim" style="font-size:clamp(1.6rem,3.5vw,2.8rem);">Boss直聘</p>
+         </div>`,
+        `<h1 class="t2 a-dot"><span class="a">抓取</span></h1><p class="st a-f-d1">职位名 · 公司 · 地点 · 描述</p><p class="st a-f-d2">自动识别，不用手动复制</p>`,
+        `<h1 class="t2 a-vs"><span class="a">分析</span></h1><div class="tl"></div><p class="st a-f-d1">匹配度评分 · 缺失技能 · 修改建议</p>`,
+        `<h1 class="t2 a-trace"><span class="a">生成</span></h1><div class="tl"></div><p class="st a-f-d1">Cover Letter · 简历定制方案</p><p class="st a-f-d2">后台完成，一键应用</p>`,
+        `<h1 class="t2 a-spiral">同步到简历</h1><p class="st a-f-d1">所有分析结果直接应用</p><p class="st a-f-d2">不用手动抄写</p>`,
+        `<p class="tg a-f">TRACKING</p><h1 class="t2 a-trace" style="font-size:clamp(1.6rem,3.5vw,2.8rem);"><span class="gr">Pending</span>  →  <span class="gr">Ready</span>  →  <span class="gr">Applied</span></h1><p class="st a-f-d2">告别 Excel</p>`,
+        `<h1 class="t1 a-breathe" style="font-size:clamp(3rem,7vw,6rem);">三语</h1><p class="st a-f-d1">简 · 繁 · En</p><p class="st a-f-d2">在香港求职，简历要准备几份？</p>`,
+        `<p class="st a-f">改了一条经历</p><h1 class="t1 a-vs" style="font-size:clamp(2.5rem,5.5vw,4.5rem);">三份都要改</h1><p class="st a-f-d2">容易改漏，容易改错</p>`,
+        `<p class="st a-f">改一处</p><h1 class="t1 a-spiral" style="font-size:clamp(3rem,7vw,6rem);">三语同步</h1><p class="st a-f-d2">顶栏一键切换，内容自动转换</p>`,
+        `<p class="tg a-f">简 ↔ 繁</p><h1 class="t2 a-trace">软件 → <span class="a">軟件</span></h1><h1 class="t2 a-trace-d1">信息 → <span class="a">資訊</span></h1><p class="st a-f-d2">词级精确转换</p>`,
+        `<p class="tg a-f">中 ↔ 英 · 大语言模型 · API 可配置</p><h1 class="t2 a-dot">腾讯 → <span class="a">Tencent</span></h1><p class="st a-f-d2">官方名称 · 术语保留</p>`,
+        `<h1 class="t2 a-vs">快照</h1><div class="tl"></div><p class="st a-f-d1">切出去再切回来</p><p class="st a-f-d2">名称不变</p>`,
+        `<p class="tg a-f">AI CAPABILITIES</p>
+         <div style="display:flex;flex-direction:column;gap:.4rem;text-align:left;">
+           <p class="st a-f" style="color:#d4d4d4;">JD 匹配分析 · 评分 + 关键词</p>
+           <p class="st a-f-d1" style="color:#a3a3a3;">简历评审 · 四维评分</p>
+           <p class="st a-f-d2" style="color:#737373;">逐条 AI 优化 · STAR 方法</p>
+           <p class="st a-f-d3" style="color:#525252;">Cover Letter · 三种风格</p>
+           <p class="st a-f-d4" style="color:#404040;">简历解析 · PDF/Word</p>
+         </div>`,
+        `<h1 class="t1 a-breathe"><span class="a">Vek</span>tor</h1><div class="tl"></div><p class="st a-f-d2">一份简历，三语通用</p>`,
+    ]);
+    window.addEventListener('keydown',e=>{
+        if(['ArrowRight','ArrowDown',' '].includes(e.key)&&cur.value<slides.value.length-1)cur.value++;
+        if(['ArrowLeft','ArrowUp'].includes(e.key)&&cur.value>0)cur.value--;
+    });
+    return{cur,slides};
+}}).mount('#app');
+</script>
+</body>
+</html>

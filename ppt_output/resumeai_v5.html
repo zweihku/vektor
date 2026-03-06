@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vektor - V5 技术硬核</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;900&family=Noto+Sans+SC:wght@300;900&family=JetBrains+Mono:wght@400;700&display=swap');
+        :root{--c:#22d3ee;--g:#34d399;--bg1:#0d1117;--bg2:#010409;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Noto Sans SC','Inter',sans-serif;background:#010409;color:#fff;overflow:hidden;}
+        .vp{width:100vw;height:100vh;display:flex;justify-content:center;align-items:center;}
+        .cv{position:relative;width:100vw;height:56.25vw;max-height:100vh;max-width:177.78vh;overflow:hidden;}
+        .sp{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:linear-gradient(180deg,var(--bg1),var(--bg2));opacity:0;pointer-events:none;transition:opacity .5s;}
+        .sp.on{opacity:1;pointer-events:auto;}
+        .bgr{position:absolute;inset:0;z-index:0;background-image:linear-gradient(rgba(34,211,238,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(34,211,238,.03) 1px,transparent 1px);background-size:60px 60px;}
+        .bgs{position:absolute;inset:0;z-index:1;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.08) 2px,rgba(0,0,0,.08) 4px);pointer-events:none;}
+        .cw{position:relative;z-index:10;padding:0 10%;display:flex;flex-direction:column;align-items:center;gap:1.6rem;max-width:100%;}
+        .t1{font-weight:900;font-size:clamp(3.2rem,7.5vw,6.5rem);line-height:1.1;color:#f0f6fc;}
+        .t1 .c{color:var(--c);} .t1 .g{color:var(--g);}
+        .t2{font-weight:900;font-size:clamp(1.8rem,4vw,3.2rem);line-height:1.2;color:#f0f6fc;}
+        .t2 .c{color:var(--c);} .t2 .g{color:var(--g);}
+        .st{font-weight:300;font-size:clamp(1rem,2vw,1.6rem);line-height:1.6;color:#8b949e;}
+        .tg{font-family:'JetBrains Mono',monospace;font-size:clamp(.65rem,1.1vw,.9rem);letter-spacing:.1em;color:#484f58;}
+        .mono{font-family:'JetBrains Mono',monospace;}
+        .cb{font-family:'JetBrains Mono',monospace;font-size:clamp(.9rem,1.8vw,1.4rem);color:var(--c);background:rgba(34,211,238,.04);border:1px solid rgba(34,211,238,.1);border-radius:8px;padding:1.3rem 2rem;text-align:left;line-height:2;max-width:90%;}
+        .cb .cm{color:#484f58;} .cb .s{color:var(--g);} .cb .kw{color:#ff7b72;} .cb .fn{color:#d2a8ff;}
+
+        /* A1: GLITCH */
+        .sp.on .a-gl{animation:glitch .4s ease-out;}
+        @keyframes glitch{0%{transform:translateX(-8px) skewX(-2deg);opacity:0;}20%{transform:translateX(5px) skewX(1deg);opacity:.7;}40%{transform:translateX(-3px);}100%{transform:none;opacity:1;}}
+
+        /* A2: CURSOR GLOW */
+        .sp.on .a-cg{animation:glitch .4s ease-out,curGlow 2.5s .5s ease-in-out infinite;}
+        @keyframes curGlow{0%,100%{text-shadow:0 0 10px rgba(34,211,238,.3);}50%{text-shadow:0 0 30px rgba(34,211,238,.7),0 0 60px rgba(34,211,238,.3),0 0 100px rgba(52,211,153,.15);}}
+
+        /* A3: FLICKER */
+        .sp.on .a-fl{animation:flicker .8s ease-out both;}
+        @keyframes flicker{0%{opacity:0;}10%{opacity:.6;}20%{opacity:.2;}40%{opacity:.8;}50%{opacity:.4;}70%{opacity:.9;}100%{opacity:1;}}
+
+        /* A4: SCAN REVEAL */
+        .sp.on .a-scan{animation:scanR .8s ease-out both;}
+        @keyframes scanR{0%{clip-path:inset(50% 0 50% 0);opacity:.5;}100%{clip-path:inset(0 0 0 0);opacity:1;}}
+
+        /* A5: CODE TYPE */
+        .sp.on .a-type{animation:typeR 1.2s steps(25) both;}
+        @keyframes typeR{0%{clip-path:inset(0 100% 0 0);}100%{clip-path:inset(0 0 0 0);}}
+
+        /* A6: BORDER PULSE */
+        .pb{border:1px solid rgba(34,211,238,.1);border-radius:8px;padding:.8rem 1.5rem;}
+        .sp.on .pb{animation:bPulse 2s .5s ease-in-out infinite;}
+        @keyframes bPulse{0%,100%{border-color:rgba(34,211,238,.1);box-shadow:none;}50%{border-color:rgba(34,211,238,.4);box-shadow:0 0 15px rgba(34,211,238,.1);}}
+
+        /* A7: DATA BAR */
+        .db{height:4px;border-radius:2px;width:0;}
+        .db.dc{background:var(--c);} .db.dg{background:var(--g);}
+        .sp.on .db{animation:barG 1s .3s ease-out forwards;}
+        @keyframes barG{to{width:100%;}}
+
+        /* STAGGER */
+        .si{opacity:0;}
+        .sp.on .si:nth-child(1){animation:glitch .4s .1s ease-out forwards;}
+        .sp.on .si:nth-child(2){animation:glitch .4s .2s ease-out forwards;}
+        .sp.on .si:nth-child(3){animation:glitch .4s .3s ease-out forwards;}
+        .sp.on .si:nth-child(4){animation:glitch .4s .4s ease-out forwards;}
+        .sp.on .si:nth-child(5){animation:glitch .4s .5s ease-out forwards;}
+        .sp.on .si:nth-child(6){animation:glitch .4s .6s ease-out forwards;}
+
+        /* FADE */
+        .sp.on .a-up{animation:fadeUp .6s ease-out both;}
+        .sp.on .a-up-d1{animation:fadeUp .6s .1s ease-out both;}
+        .sp.on .a-up-d2{animation:fadeUp .6s .2s ease-out both;}
+        .sp.on .a-up-d3{animation:fadeUp .6s .3s ease-out both;}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(15px);}to{opacity:1;transform:none;}}
+
+        .nb{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:100;}
+        .nd{width:12px;height:3px;border-radius:1px;background:rgba(255,255,255,.12);cursor:pointer;transition:all .3s;}
+        .nd.on{background:var(--c);width:24px;}
+        .sc{position:fixed;top:24px;right:32px;font-size:13px;color:rgba(34,211,238,.25);font-family:'JetBrains Mono',monospace;z-index:100;}
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="vp"><div class="cv">
+        <div v-for="(s,i) in slides" :key="i" class="sp" :class="{on:cur===i}">
+            <div class="bgr"></div><div class="bgs"></div>
+            <div class="cw" v-html="s"></div>
+        </div>
+    </div></div>
+    <div class="nb"><div v-for="(s,i) in slides" :key="i" class="nd" :class="{on:cur===i}" @click="cur=i"></div></div>
+    <div class="sc">{{cur+1}} / {{slides.length}}</div>
+</div>
+<script>
+const {createApp,ref}=Vue;
+createApp({setup(){
+    const cur=ref(0);
+    const slides=ref([
+        /* 1 */ `<p class="tg a-up">// ai-powered job application assistant</p><h1 class="t1 a-cg"><span class="c">Vek</span><span class="g">tor</span></h1><p class="st a-up-d2">边刷职位，边求职</p>`,
+        /* 2 */ `<p class="tg a-up">// traditional workflow</p><h1 class="t1 a-gl">打开 <span class="c">Word</span></h1><p class="st a-up-d2">看到好职位的第一反应</p>`,
+        /* 3 */ `<p class="tg a-up">// blind apply</p><div class="cb a-type">
+<span class="fn">readJD</span>(posting)           <span class="cm">// 逐字读，猜关键词</span>
+<span class="fn">editResume</span>(<span class="s">'感觉'</span>)       <span class="cm">// 凭感觉改措辞</span>
+<span class="fn">submit</span>()                  <span class="cm">// 匹配度多少？不知道</span></div>`,
+        /* 4 */ `<h1 class="t1 a-fl">Cover <span class="c">Letter</span></h1><p class="st a-up-d1">复制上一份，改个公司名</p><p class="st a-up-d2" style="color:#484f58;">// 或者干脆不写</p>`,
+        /* 5 */ `<p class="tg a-up">// job.tracking === null</p><h1 class="t1 a-scan">投了 <span class="c">10</span> 个</h1><p class="st a-up-d1">哪个什么状态？忘了</p><p class="st a-up-d2" style="color:#484f58;">开了个 Excel，记了两天就没再打开</p>`,
+        /* 6 */ `<p class="tg a-up">// solution</p><h1 class="t1 a-scan"><span class="c">chrome</span> extension</h1><p class="st a-up-d2">装个插件，不离开招聘网站完成全流程</p>`,
+        /* 7 */ `<p class="tg a-up">// platform.coverage</p>
+                 <div style="display:flex;flex-direction:column;gap:.5rem;text-align:left;width:55%;">
+                   <div class="si" style="display:flex;align-items:center;gap:1rem;"><span class="mono" style="color:var(--c);font-weight:700;width:130px;">LinkedIn</span><div class="db dc" style="flex:1;max-width:180px;"></div></div>
+                   <div class="si" style="display:flex;align-items:center;gap:1rem;"><span class="mono" style="color:var(--c);font-weight:700;width:130px;">Indeed</span><div class="db dc" style="flex:1;max-width:160px;"></div></div>
+                   <div class="si" style="display:flex;align-items:center;gap:1rem;"><span class="mono" style="color:var(--g);font-weight:700;width:130px;">JobsDB</span><div class="db dg" style="flex:1;max-width:140px;"></div></div>
+                   <div class="si" style="display:flex;align-items:center;gap:1rem;"><span class="mono" style="color:var(--g);font-weight:700;width:130px;">CTgoodjobs</span><div class="db dg" style="flex:1;max-width:120px;"></div></div>
+                   <div class="si" style="display:flex;align-items:center;gap:1rem;"><span class="mono" style="color:var(--c);font-weight:700;width:130px;">Boss直聘</span><div class="db dc" style="flex:1;max-width:130px;"></div></div>
+                 </div>`,
+        /* 8 */ `<p class="tg a-up">// auto extract</p><div class="cb a-type">
+<span class="fn">extractJD</span>(currentPage)
+<span class="cm">// → title, company, location, description</span>
+<span class="cm">// 自动识别页面，不用手动复制</span></div>`,
+        /* 9 */ `<h1 class="t1 a-gl"><span class="c">匹配度</span><br>当场就知道</h1><p class="st a-up-d1">核心要求满足几项、缺什么技能</p><p class="st a-up-d2">该怎么改，浮动卡片直接显示</p>`,
+        /* 10 */ `<p class="tg a-up">// background pipeline</p><div class="cb a-type">
+<span class="fn">save</span>(job)
+  .<span class="fn">then</span>(<span class="fn">analyzeMatch</span>)      <span class="cm">// JD 深度分析</span>
+  .<span class="fn">then</span>(<span class="fn">generateCoverLetter</span>) <span class="cm">// 生成求职信</span>
+  .<span class="fn">then</span>(<span class="fn">suggestRevisions</span>)   <span class="cm">// 简历修改建议</span>
+  .<span class="fn">then</span>(<span class="fn">syncToResume</span>)       <span class="cm">// 一键应用</span></div>`,
+        /* 11 */ `<h1 class="t2 a-scan"><span class="c">sync</span>ToResume()</h1><p class="st a-up-d1">所有分析结果直接同步到简历</p><p class="st a-up-d2" style="color:var(--c);">不用手动抄写，不用来回对照</p>`,
+        /* 12 */ `<p class="tg a-up">// job.tracking</p>
+                  <div style="display:flex;gap:1.2rem;align-items:center;">
+                    <div class="pb si"><p class="mono" style="color:var(--c);">Pending</p></div>
+                    <span class="mono si" style="color:#484f58;">→</span>
+                    <div class="pb si"><p class="mono" style="color:var(--g);">Ready</p></div>
+                    <span class="mono si" style="color:#484f58;">→</span>
+                    <div class="pb si"><p class="mono" style="color:#f0f6fc;">Applied</p></div>
+                  </div><p class="st a-up-d3">看板式追踪，告别 Excel</p>`,
+        /* 13 */ `<p class="tg a-up">// hong kong job market</p><h1 class="t1 a-fl"><span class="c">3</span> languages</h1><p class="st a-up-d2">在香港求职，简历要准备几份？</p>`,
+        /* 14 */ `<div class="cb a-type">
+<span class="cm">// 一个小修改 → 三倍工作量</span>
+resume.<span class="c">zhHans</span>  <span class="cm">// 简体 → 内地公司</span>
+resume.<span class="g">zhHant</span>  <span class="cm">// 繁体 → 香港本地</span>
+resume.<span class="c">en</span>      <span class="cm">// 英文 → 外企</span>
+<span class="cm">// 改了一处，三份都要改，还容易漏</span></div>`,
+        /* 15 */ `<h1 class="t1 a-cg"><span class="c">改一次</span><br>三语同步</h1><p class="st a-up-d2">顶栏切换，内容自动转换</p>`,
+        /* 16 */ `<p class="tg a-up">// opencc-js — 词级精确转换</p><div class="cb a-type">
+<span class="fn">convert</span>(<span class="s">'软件'</span>)  <span class="cm">→</span> <span class="s">'軟件'</span>
+<span class="fn">convert</span>(<span class="s">'信息'</span>)  <span class="cm">→</span> <span class="s">'資訊'</span>
+<span class="fn">convert</span>(<span class="s">'网络'</span>)  <span class="cm">→</span> <span class="s">'網絡'</span>
+<span class="cm">// 不是字符映射，是真正的语义对应</span></div>`,
+        /* 17 */ `<p class="tg a-up">// llm.translate() — API 可自由配置</p><div class="cb a-type">
+<span class="fn">translate</span>(<span class="s">'腾讯'</span>)  <span class="cm">→</span> <span class="s">'Tencent'</span>
+<span class="fn">translate</span>(<span class="s">'港大'</span>)  <span class="cm">→</span> <span class="s">'The University of Hong Kong'</span>
+<span class="fn">preserve</span>(<span class="s">'React'</span>) <span class="cm">→</span> <span class="s">'React'</span> <span class="cm">// 术语原样保留</span></div>`,
+        /* 18 */ `<p class="tg a-up">// name snapshot</p><div class="cb a-type">
+<span class="kw">const</span> snap = <span class="fn">saveNames</span>(resume.<span class="c">zh</span>)
+<span class="fn">translate</span>(zh → en) <span class="cm">// 腾讯 → Tencent</span>
+<span class="cm">// 用户使用英文版...</span>
+<span class="fn">restoreNames</span>(snap) <span class="cm">// 切回 → 腾讯 ✓</span>
+<span class="cm">// 不靠反向翻译，直接恢复快照</span></div>`,
+        /* 19 */ `<p class="tg a-up">// ai.capabilities — 不只是翻译</p>
+                  <div style="display:flex;flex-direction:column;gap:.4rem;text-align:left;">
+                    <p class="st si"><span class="c mono" style="font-weight:700;">analyzeMatch()</span>  JD 匹配 + ATS 关键词</p>
+                    <p class="st si"><span class="g mono" style="font-weight:700;">reviewResume()</span>  四维评分 + 逐章反馈</p>
+                    <p class="st si"><span class="c mono" style="font-weight:700;">optimizeBullet()</span> STAR 方法 + 量化</p>
+                    <p class="st si"><span class="g mono" style="font-weight:700;">generateCL()</span>    三种风格 + 双语</p>
+                    <p class="st si"><span class="c mono" style="font-weight:700;">translate()</span>     三语互转 + 快照</p>
+                    <p class="st si"><span class="g mono" style="font-weight:700;">parseResume()</span>   PDF/Word 自动填充</p>
+                  </div>
+                  <p class="st a-up-d3" style="color:var(--c);">六大能力，覆盖从看到职位到投出简历的完整流程</p>`,
+        /* 20 */ `<h1 class="t1 a-cg" style="font-size:clamp(3.5rem,9vw,8rem);"><span class="c">ship</span> <span class="g">it.</span></h1><p class="tg a-up-d2">VEKTOR // 边刷职位，边求职</p>`,
+    ]);
+    window.addEventListener('keydown',e=>{
+        if(['ArrowRight','ArrowDown',' '].includes(e.key)&&cur.value<slides.value.length-1)cur.value++;
+        if(['ArrowLeft','ArrowUp'].includes(e.key)&&cur.value>0)cur.value--;
+    });
+    return{cur,slides};
+}}).mount('#app');
+</script>
+</body>
+</html>
